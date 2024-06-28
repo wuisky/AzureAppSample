@@ -7,4 +7,5 @@ Werkzeug==2.0.3
 azure.mgmt.compute
 azure-identity
 azure-mgmt-containerregistry
-msrestazur msrest
+msrestazur
+msrest
