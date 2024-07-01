@@ -1,11 +1,11 @@
 #!/usr/bin/env/ python
 import os
 
-from azure.identity import AzureDeveloperCliCredential
-from azure.mgmt.containerregistry import ContainerRegistryManagementClient
-from azure.mgmt.containerregistry.models import GenerateCredentialsParameters
-from azure.mgmt.containerregistry.models import Token
-from azure.mgmt.containerregistry.models import TokenCredentialsProperties
+# from azure.identity import AzureDeveloperCliCredential
+# from azure.mgmt.containerregistry import ContainerRegistryManagementClient
+# from azure.mgmt.containerregistry.models import GenerateCredentialsParameters
+# from azure.mgmt.containerregistry.models import Token
+# from azure.mgmt.containerregistry.models import TokenCredentialsProperties
 from datetime import datetime
 from datetime import timedelta
 from flask import Flask
@@ -38,46 +38,46 @@ app = Flask(__name__, static_folder='.', static_url_path='')
 cors = CORS(app, supports_credentials=True, allow_headers='Content-Type')
 
 
-def payout_token(uuid):
-    credential = AzureDeveloperCliCredential(tenant_id=TENANT_ID)
-    client = ContainerRegistryManagementClient(credential=credential,
-                                               subscription_id=SUBSCRIPTION_ID)
-    arg_token = Token(
-        scope_map_id=SCOPE_MAP_ID,
-        status='enabled',
-        credentials=TokenCredentialsProperties(),
-    )
+# def payout_token(uuid):
+#     credential = AzureDeveloperCliCredential(tenant_id=TENANT_ID)
+#     client = ContainerRegistryManagementClient(credential=credential,
+#                                                subscription_id=SUBSCRIPTION_ID)
+#     arg_token = Token(
+#         scope_map_id=SCOPE_MAP_ID,
+#         status='enabled',
+#         credentials=TokenCredentialsProperties(),
+#     )
 
-    token = client.tokens.begin_create(
-        RESOURCE_GROUP_NAME,
-        REGISTRY_NAME,
-        uuid + 'Token',
-        token_create_parameters=arg_token
-    )
+#     token = client.tokens.begin_create(
+#         RESOURCE_GROUP_NAME,
+#         REGISTRY_NAME,
+#         uuid + 'Token',
+#         token_create_parameters=arg_token
+#     )
 
-    token.wait(30)
-    # Output the token details
-    if token.done():
-        res = token.result(10)
-        token_id = res.id
-    else:
-        return
+#     token.wait(30)
+#     # Output the token details
+#     if token.done():
+#         res = token.result(10)
+#         token_id = res.id
+#     else:
+#         return
 
-    now = datetime.now()
-    three_hour_later = now + timedelta(hours=3)
+#     now = datetime.now()
+#     three_hour_later = now + timedelta(hours=3)
 
-    parameters = GenerateCredentialsParameters(
-        token_id=token_id,
-        expiry=three_hour_later  # Credential valid for 1 hour
-    )
-    credential_poller = client.registries.begin_generate_credentials(
-        resource_group_name=RESOURCE_GROUP_NAME,
-        registry_name=REGISTRY_NAME,
-        generate_credentials_parameters=parameters
-    )
+#     parameters = GenerateCredentialsParameters(
+#         token_id=token_id,
+#         expiry=three_hour_later  # Credential valid for 1 hour
+#     )
+#     credential_poller = client.registries.begin_generate_credentials(
+#         resource_group_name=RESOURCE_GROUP_NAME,
+#         registry_name=REGISTRY_NAME,
+#         generate_credentials_parameters=parameters
+#     )
 
-    credential_result = credential_poller.result()
-    return credential_result.passwords[0].value
+#     credential_result = credential_poller.result()
+#     return credential_result.passwords[0].value
 
 
 @app.route('/service', methods=['OPTIONS'])
@@ -92,35 +92,35 @@ def service_callback():
     # print(f'Aparam is {request.headers["Aparam"]}')
     data = json.loads(request.data.decode('utf-8'))
     print(f'data\n{data}')
-    r = requests.post(
-        BASE_URL + '/validate_license/' + SERVICE_ID,
-        # data=json.dumps(license_info),
-        data=json.dumps(data),
-        headers={
-            'Content-Type': 'application/json',
-            'Authentication': API_KEY,
-        },
-        timeout=(10.0, 10.0),
-        proxies=proxies,
-    )
+    # r = requests.post(
+    #     BASE_URL + '/validate_license/' + SERVICE_ID,
+    #     # data=json.dumps(license_info),
+    #     data=json.dumps(data),
+    #     headers={
+    #         'Content-Type': 'application/json',
+    #         'Authentication': API_KEY,
+    #     },
+    #     timeout=(10.0, 10.0),
+    #     proxies=proxies,
+    # )
 
     response_data = {
         'status': 'fail',
         'message': 'Invalid license'
     }
 
-    if r.status_code == 200:
-        uuid = data['li_device_id']
-        password = payout_token(uuid)
-        if password:
-            response_data = {
-                'status': 'success',
-                'message': 'Data processed successfully',
-                'token': uuid + 'Token',
-                'password': password,
-                'registry': REGISTRY,
-                'status_code': r.status_code,
-            }
+    # if r.status_code == 200:
+    #     uuid = data['li_device_id']
+    #     password = payout_token(uuid)
+    #     if password:
+    #         response_data = {
+    #             'status': 'success',
+    #             'message': 'Data processed successfully',
+    #             'token': uuid + 'Token',
+    #             'password': password,
+    #             'registry': REGISTRY,
+    #             'status_code': r.status_code,
+    #         }
 
     return jsonify(response_data)
 
