@@ -134,4 +134,4 @@ def after_request(response):
     return response
 
 
-app.run(debug=True, port=5555, host='0.0.0.0', use_reloader=False)
+app.run(debug=True, port=80, host='0.0.0.0', use_reloader=False)
