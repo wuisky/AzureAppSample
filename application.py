@@ -95,47 +95,35 @@ def service_callback():
     # print(f'Aparam is {request.headers["Aparam"]}')
     data = json.loads(request.data.decode('utf-8'))
     print(f'data\n{data}')
-    # r = requests.post(
-    #     BASE_URL + '/validate_license/' + SERVICE_ID,
-    #     # data=json.dumps(license_info),
-    #     data=json.dumps(data),
-    #     headers={
-    #         'Content-Type': 'application/json',
-    #         'Authentication': API_KEY,
-    #     },
-    #     timeout=(10.0, 10.0),
-    #     proxies=proxies,
-    # )
+    r = requests.post(
+        BASE_URL + '/validate_license/' + SERVICE_ID,
+        # data=json.dumps(license_info),
+        data=json.dumps(data),
+        headers={
+            'Content-Type': 'application/json',
+            'Authentication': API_KEY,
+        },
+        timeout=(10.0, 10.0),
+        proxies=proxies,
+    )
 
     response_data = {
         'status': 'fail',
         'message': 'Invalid license'
     }
 
-    # if r.status_code == 200:
-    #     uuid = data['li_device_id']
-    #     password = payout_token(uuid)
-    #     if password:
-    #         response_data = {
-    #             'status': 'success',
-    #             'message': 'Data processed successfully',
-    #             'token': uuid + 'Token',
-    #             'password': password,
-    #             'registry': REGISTRY,
-    #             'status_code': r.status_code,
-    #         }
-
-    uuid = data['li_device_id']
-    password = payout_token(uuid)
-    if password:
-        response_data = {
-            'status': 'success',
-            'message': 'Data processed successfully',
-            'token': uuid + 'Token',
-            'password': password,
-            'registry': REGISTRY,
-            'status_code': 200,
-        }
+    if r.status_code == 200:
+        uuid = data['li_device_id']
+        password = payout_token(uuid)
+        if password:
+            response_data = {
+                'status': 'success',
+                'message': 'Data processed successfully',
+                'token': uuid + 'Token',
+                'password': password,
+                'registry': REGISTRY,
+                'status_code': r.status_code,
+            }
 
     return jsonify(response_data)
 
