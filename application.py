@@ -134,4 +134,8 @@ def after_request(response):
     return response
 
 
-app.run(debug=True, port=443, host='0.0.0.0', use_reloader=False)
+if __name__ == "__main__":
+    app.run(debug=True)
+        #, port=443,
+        #host='0.0.0.0',
+        #use_reloader=False
