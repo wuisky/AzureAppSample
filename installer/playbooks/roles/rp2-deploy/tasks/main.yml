@@ -1,0 +1,37 @@
+- name: Execute Python script to pull rp2_main docker image
+  shell: python3 '{{ role_path }}/files/client.py'
+
+- name: start rp2_main-deploy-no-gpu
+  docker_compose:
+    project_src: '{{ role_path }}/files/rp2_main'
+    state: present
+    pull: false
+    restarted: yes
+    files: docker-compose-deploy-no-gpu.yml
+  when: not gpu | bool
+
+- name: start rp2_main-deploy
+  docker_compose:
+    project_src: '{{ role_path }}/files/rp2_main'
+    state: present
+    pull: false
+    restarted: yes
+    files: docker-compose-deploy.yml
+  when: gpu | bool
+
+- name: Update vm.max_map_count
+  sysctl:
+    name: vm.max_map_count
+    value: 262144
+    state: present
+
+- name: setup elastic stack
+  shell: |
+    make setup
+    make elk
+  args:
+    chdir: '{{ role_path }}/files/elastdocker'
+  become: no
+  environment:
+    http_proxy: "{{ lookup('env', 'http_proxy') }}"
+    https_proxy: "{{ lookup('env', 'http_proxy') }}"

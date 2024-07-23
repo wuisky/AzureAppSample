@@ -1,0 +1,4 @@
+# List of rp2 docker repositories
+
+- git: {local-name: elastdocker, uri: 'git@github.com:wuisky/elastdocker.git', version: main}
+- git: {local-name: rp2_main, uri: 'git@github.com:PanasonicConnect/rp2_main.git', version: main}

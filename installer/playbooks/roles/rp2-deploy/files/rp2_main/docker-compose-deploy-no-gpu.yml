@@ -1,0 +1,31 @@
+version: '3.5'
+
+services:
+  rp2_main:
+    image: rp2main.azurecr.io/rp2_main:${VERSION:-latest}
+    container_name: rp2_main
+    hostname: rp2_main
+    restart: always
+    # runtime: runc
+    privileged: true
+    ipc: host
+    network_mode: host
+    security_opt:
+      - seccomp=unconfined
+    shm_size: 512m
+    volumes:
+      - ./bashrc:/home/ubuntu/.bashrc
+      - /tmp/.X11-unix:/tmp/.X11-unix # without novnc
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./entrypoint.sh:/home/ubuntu/entrypoint.sh
+    entrypoint: /home/ubuntu/entrypoint.sh
+    working_dir: /home/ubuntu/local_mount/ros2_ws
+    stdin_open: true
+    tty: true
+    environment:
+      DISPLAY: ${DISPLAY}
+      QT_X11_NO_MITSHM: 1
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: all
+    devices:
+      - /dev:/dev:rw

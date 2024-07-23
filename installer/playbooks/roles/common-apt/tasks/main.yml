@@ -1,0 +1,25 @@
+- name: Upgrade apt packages
+  apt:
+    name:
+      - apt-utils
+      - build-essential
+      - ccache
+      - clang-format
+      - clangd
+      - connect-proxy
+      - cmake
+      - curl
+      - g++
+      - gcc
+      - git
+      - git-lfs
+      - htop
+      - ipython3
+      - make
+      - net-tools
+      - openssl
+      - python-is-python3
+      - python3-nose
+      - python3-pip
+    state: latest
+  become: yes
